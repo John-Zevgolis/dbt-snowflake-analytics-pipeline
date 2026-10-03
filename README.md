@@ -1,12 +1,18 @@
-# 🥪 The Jaffle Shop 🦘
+# Modern Data Stack Analytics Pipeline (dbt & Snowflake)
 
-_powered by the dbt Fusion engine_
+A production-grade analytics engineering project implementing a dimensional star schema using **dbt (Data Build Tool)** and **Snowflake**. This project models transactional and customer data following industry best practices, data governance, and automated testing.
 
-Welcome! This is a sandbox project for exploring the basic functionality of Fusion. It's based on a fictional restaurant called the Jaffle Shop that serves [jaffles](https://en.wikipedia.org/wiki/Pie_iron).
+## 🏗️️ Architecture & Data Modeling
+The project follows a classic **Star Schema** architecture within the `marts` layer:
+* **`fct_orders`**: Transaction-grain fact table incorporating advanced window functions (`ROW_NUMBER`, `LAG`) to track customer order sequences and intervals (`days_since_previous_order`).
+* **`dim_customers`**: Customer-grain dimension table aggregating order metrics (`total_spent`, `number_of_orders`, `first_order_date`, `most_recent_order_date`).
 
-To get started:
-1. Set up your database connection in `~/.dbt/profiles.yml`. If you got here by running `dbt init`, you should already be good to go.
-2. Run `dbt build`. That's it!
+## 🛠️ Tech Stack
+* **Data Warehouse:** Snowflake
+* **Transformation & Modeling:** dbt (Data Build Tool) with Jinja SQL
+* **Data Governance & Quality:** dbt Data Contracts & Custom Data Tests
 
-> [!NOTE]
-> If you're brand-new to dbt, we recommend starting with the [dbt Learn](https://learn.getdbt.com/) platform. It's a free, interactive way to learn dbt, and it's a great way to get started if you're new to the tool.
+## 🌟 Key Features & Best Practices
+* **Enforced Data Contracts:** Guaranteed schema definitions, data types, and primary/foreign key constraints (`enforced: true`).
+* **Advanced Testing Suite:** Implemented unique, not-null, relationships, custom expression tests (e.g., chronological validation), and accepted ranges.
+* **Incremental Processing:** Designed with incremental materialization capabilities for efficient data scaling.
