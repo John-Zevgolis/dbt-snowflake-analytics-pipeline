@@ -1,0 +1,79 @@
+models:
+  - name: fct_orders
+    config:
+      contract:
+        enforced: true
+    description: 'Fact table containing transaction-level details for each order, storing foreign keys to customers and stores.'
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: 'subtotal + tax_paid = order_total'
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: 'last_ordered_at <= ordered_at'
+    columns:
+      - name: order_sequence
+        description: 'Sequential order number for the customer.'
+        data_type: number(18,0)
+        tests:
+          - not_null
+      - name: customer_id
+        description: 'Foreign key linking to the customer who placed the order.'
+        data_type: string
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: order_id
+        description: 'Primary key for the order.'
+        data_type: string
+        tests:
+          - unique
+          - not_null
+      - name: ordered_at
+        description: 'Timestamp of when the order was placed.'
+        data_type: timestamp
+        tests:
+          - not_null
+      - name: last_ordered_at
+        description: "Timestamp of the customer's previous order."
+        data_type: timestamp
+      - name: days_since_previous_order
+        description: "Number of days elapsed since the customer's previous order."
+        data_type: number(9,0)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+      - name: store_id
+        description: 'Foreign key linking to the store where the order was placed.'
+        data_type: string
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_stores')
+                field: store_id
+      - name: subtotal
+        description: 'Subtotal amount of the order before taxes.'
+        data_type: numeric(10,2)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+      - name: tax_paid
+        description: 'Tax amount paid for the order.'
+        data_type: numeric(10,2)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+      - name: order_total
+        description: 'Total amount of the order including subtotal and tax.'
+        data_type: numeric(10,2)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0

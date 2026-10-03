@@ -1,0 +1,33 @@
+models:
+  - name: dim_products
+    config:
+      contract:
+        enforced: true
+    description: 'One record per product, containing product details, category type, and pricing.'
+    columns:
+      - name: product_id
+        description: 'Primary key for the product.'
+        data_type: string
+        tests:
+          - unique
+          - not_null
+      - name: product_name
+        description: 'Name of the product.'
+        data_type: string
+      - name: type
+        description: 'Type or category of the product.'
+        data_type: string
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['beverage', 'jaffle']
+      - name: price
+        description: 'Price of the product.'
+        data_type: numeric(10,2)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+      - name: description
+        description: 'Detailed description of the product.'
+        data_type: string

@@ -1,0 +1,35 @@
+models:
+  - name: dim_customers
+    config:
+      contract:
+        enforced: true
+    description: 'One record per customer, containing customer details and order summary metrics.'
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: 'first_order_date <= most_recent_order_date'
+    columns:
+      - name: customer_id
+        description: 'Primary key for customers.'
+        data_type: string
+        tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: "Customer's first name."
+        data_type: string
+      - name: last_name
+        description: "Customer's last name."
+        data_type: string
+      - name: number_of_orders
+        description: 'Total number of orders placed by the customer.'
+        data_type: number(18,0)
+      - name: total_spent
+        description: 'Total monetary amount spent by the customer.'
+        data_type: number(22,2)
+      - name: first_order_date
+        description: "Date of the customer's first order."
+        data_type: timestamp
+      - name: most_recent_order_date
+        description: "Date of the customer's most recent order."
+        data_type: timestamp

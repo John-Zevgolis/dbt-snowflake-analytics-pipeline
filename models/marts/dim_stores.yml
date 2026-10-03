@@ -1,0 +1,26 @@
+models:
+  - name: dim_stores
+    config:
+      contract:
+        enforced: true
+    description: 'One record per store, containing store details, opening date, and local tax rates.'
+    columns:
+      - name: store_id
+        description: 'Primary key for the store.'
+        data_type: string
+        tests:
+          - unique
+          - not_null
+      - name: store_name
+        description: 'Name of the store.'
+        data_type: string
+      - name: opened_at
+        description: 'Date when the store was opened.'
+        data_type: date
+      - name: tax_rate
+        description: 'Tax rate applied at the store.'
+        data_type: numeric(10,2)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0

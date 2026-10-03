@@ -1,0 +1,36 @@
+models:
+  - name: fct_order_items
+    config:
+      contract:
+        enforced: true
+    description: 'Fact table containing item-level details for each order, linking order items to products and capturing the item price.'
+    columns:
+      - name: item_id
+        description: 'Primary key for the order item.'
+        data_type: string
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        description: 'Foreign key linking to the order.'
+        data_type: string
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_orders')
+                field: order_id
+      - name: product_id
+        description: 'Foreign key linking to the product.'
+        data_type: string
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+      - name: item_price
+        description: 'Price of the product at the time of the order.'
+        data_type: numeric(10,2)
+        tests:
+          - not_null

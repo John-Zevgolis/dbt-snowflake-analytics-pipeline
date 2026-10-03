@@ -1,0 +1,40 @@
+models:
+  - name: fct_product_supplies
+    config:
+      contract:
+        enforced: true
+    description: 'Fact table containing product supply details, linking supplies to their respective products and capturing costs and perishability.'
+    columns:
+      - name: supply_id
+        description: 'Primary key for the supply.'
+        data_type: string
+        tests:
+          - unique
+          - not_null
+      - name: source_supply_id
+        description: 'Source identifier for the supply.'
+        data_type: string
+        tests:
+          - not_null
+      - name: product_id
+        description: 'Foreign key linking to the product.'
+        data_type: string
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+      - name: supply_name
+        description: 'Name of the supply item.'
+        data_type: string
+      - name: cost
+        description: 'Cost of the supply.'
+        data_type: numeric(10,2)
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+      - name: perishable
+        description: 'Boolean flag indicating if the supply is perishable.'
+        data_type: boolean

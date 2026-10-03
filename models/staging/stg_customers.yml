@@ -1,0 +1,16 @@
+models:
+  - name: stg_customers
+    config:
+      contract:
+        enforced: true
+    description: 'Staged table for customers.'
+    columns:
+      - name: customer_id
+        description: 'Primary key for the customer.'
+        data_type: string
+        tests:
+          - unique
+          - not_null
+      - name: customer_name
+        description: 'Full name of the customer.'
+        data_type: string
