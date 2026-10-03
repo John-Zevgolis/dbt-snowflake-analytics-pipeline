@@ -4,6 +4,10 @@ sources:
   - name: jaffle_shop
     schema: 'raw'
     description: E-commerce data for the Jaffle Shop
+    config:
+      freshness:
+        warn_after: { count: 24, period: hour }
+        error_after: { count: 48, period: hour }
     tables:
       - name: customers
         identifier: raw_customers
