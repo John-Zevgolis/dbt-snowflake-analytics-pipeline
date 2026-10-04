@@ -13,9 +13,14 @@ seeds:
   jaffle_shop:
     +schema: raw
 
+on-run-start:
+  - 'CREATE TABLE IF NOT EXISTS {{ target.schema }}.audit_log ( model_name STRING, run_timestamp TIMESTAMP )'
+
 models:
+  +post-hook:
+    - "INSERT INTO {{ target.schema }}.audit_log VALUES ('{{ this }}', CURRENT_TIMESTAMP)"
   +grants:
-    select: ['transform']
+    select: ['transform', 'reporter']
   jaffle_shop:
     +static_analysis: strict
     staging:
