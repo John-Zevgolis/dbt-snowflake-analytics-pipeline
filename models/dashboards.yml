@@ -1,0 +1,15 @@
+exposures:
+  - name: executive_dashboard
+    label: Executive Dashboard
+    type: dashboard
+    maturity: low
+    url: https://812790cc.us2a.app.preset.io/superset/dashboard/1/?native_filters_key=Rs0xZGwQ1Rer3KmFce7Wgw
+    description: Executive Dashboard tracking daily revenue and top customer performance
+
+    depends_on:
+      - ref('dim_customers')
+      - ref('fct_orders')
+
+    owner:
+      name: John Zevgolis
+      email: zevgolis.ioannis@gmail.com
