@@ -21,13 +21,8 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-
-      - run: uv python install 3.10
-      - run: uv sync
+      - name: Install dbt-snowflake
+        run: pip install dbt-snowflake
 
       - name: Create profiles.yml from Secret
         run: |

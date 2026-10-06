@@ -37,6 +37,9 @@ jobs:
           echo "DBT_ENV_NAME=$SANITIZED" >> "$GITHUB_ENV"
           echo "Will drop schema matching: $SANITIZED"
 
+      - name: Install dbt dependencies
+        run: dbt deps --target dev
+
       - name: Run dbt operation to drop schema
         run: |
           dbt run-operation drop_dev_schemas --target dev
