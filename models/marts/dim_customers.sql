@@ -19,6 +19,8 @@ joined as (
     on customers.customer_id = orders.customer_id
 )
 
+-- test
+
 select 
     joined.customer_id as customer_id, 
     SPLIT_PART(joined.customer_name, ' ', 1) as first_name,
