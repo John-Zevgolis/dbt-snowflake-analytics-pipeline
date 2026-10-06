@@ -27,4 +27,4 @@ select
     coalesce(sum(order_total), 0) as total_spent, 
     min(ordered_at) as first_order_date, 
     max(ordered_at) as most_recent_order_date
-from joined group by customer_id, first_name, last_name;
+from joined group by customer_id, first_name, last_name

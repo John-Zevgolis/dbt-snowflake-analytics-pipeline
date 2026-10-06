@@ -9,4 +9,4 @@ select
     supply_name,
     cost,
     perishable
-from supplies;
+from supplies
