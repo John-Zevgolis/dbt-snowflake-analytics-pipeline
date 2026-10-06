@@ -1,0 +1,59 @@
+name: PR slim CI (defer to prod artifact)
+
+on:
+  pull_request:
+    branches: ['**']
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  slim-ci:
+    name: Build modified with defer to prod artifact
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - run: uv python install 3.10
+      - run: uv sync
+
+      - name: Create profiles.yml from Secret
+        run: |
+          mkdir -p ~/.dbt
+          echo "${{ secrets.DBT_PROFILES_CONTENT }}" > ~/.dbt/profiles.yml
+
+      - name: Set DBT_ENV_NAME from branch (uppercase, _ for / and -)
+        run: |
+          NAME="${{ github.head_ref }}"
+          SANITIZED=$(echo "$NAME" | tr '/' '_' | tr '-' '_' | tr '[:lower:]' '[:upper:]')
+          echo "DBT_ENV_NAME=$SANITIZED" >> "$GITHUB_ENV"
+          echo "PR will build into schema: DBT_$SANITIZED"
+
+      - name: Install dbt dependencies
+        run: dbt deps --target dev
+
+      - name: Download latest prod-target artifact from main
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          workflow: prod-build.yml
+          branch: main
+          name: prod-target
+          path: prod-target
+          if_no_artifact_found: fail
+
+      - name: dbt build (slim CI with state modification and deferral)
+        run: |
+          dbt build --target dev \
+            --select state:modified+ --defer --state ./prod-target

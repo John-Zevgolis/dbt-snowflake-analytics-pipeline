@@ -1,0 +1,42 @@
+name: PR cleanup (drop dev schema on merge)
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  drop-dev-schema:
+    name: Drop dev schemas for merged PR
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dbt-snowflake
+        run: pip install dbt-snowflake
+
+      - name: Create profiles.yml from Secret
+        run: |
+          mkdir -p ~/.dbt
+          echo "${{ secrets.DBT_PROFILES_CONTENT }}" > ~/.dbt/profiles.yml
+
+      - name: Set DBT_ENV_NAME from merged branch
+        run: |
+          NAME="${{ github.head_ref }}"
+          SANITIZED=$(echo "$NAME" | tr '/' '_' | tr '-' '_' | tr '[:lower:]' '[:upper:]')
+          echo "DBT_ENV_NAME=$SANITIZED" >> "$GITHUB_ENV"
+          echo "Will drop schema matching: $SANITIZED"
+
+      - name: Run dbt operation to drop schema
+        run: |
+          dbt run-operation drop_dev_schemas --target dev
